@@ -1,0 +1,83 @@
+set img "$env(IMG)"
+set iso "$env(ISO)"
+
+set prompt "*@archiso*~*#* "
+set chroot_prompt "*root@archiso* "
+set timeout -1
+
+spawn qemu-system-x86_64 -cdrom $iso -cpu host -enable-kvm -m 2048 -smp 2 -drive file=$img,format=raw -nographic
+match_max 100000
+expect "*Arch Linux install medium (x86_64*"
+send -- "\t"
+expect "*initramfs-linux.img*"
+send -- " console=ttyS0,38400\r"
+
+expect "archiso login: "
+send -- "root\r"
+expect $prompt
+send -- "fdisk /dev/sda\r"
+expect "Command (m for help): "
+send -- "n\r"
+expect "Select (default p): "
+send -- "p\r"
+expect "Partition number (1-4, default 1): "
+send -- "\r"
+expect "First sector*: "
+send -- "\r"
+expect "Last sector*: "
+send -- "\r"
+expect "Command (m for help): "
+send -- "a\r"
+expect "Command (m for help): "
+send -- "w\r"
+expect $prompt
+send -- "mkfs.ext4 /dev/sda1\r"
+expect $prompt
+send -- "mount /dev/sda1 /mnt\r"
+expect $prompt
+send -- "pacstrap /mnt base linux linux-firmware dhcpcd openssh\r"
+expect $prompt
+send -- "cp /etc/pacman.d/mirrorlist /mnt/etc/pacman.d/mirrorlist\r"
+expect $prompt
+send -- "genfstab -U /mnt >> /mnt/etc/fstab\r"
+expect $prompt
+send -- "arch-chroot /mnt\r"
+expect $chroot_prompt
+send -- "ln -sf /usr/share/zoneinfo/Canada/Eastern /etc/localtime\r"
+expect $chroot_prompt
+send -- "hwclock --systohc\r"
+expect $chroot_prompt
+send -- "echo en_US.UTF-8 UTF-8 >> /etc/locale.gen\r"
+expect $chroot_prompt
+send -- "locale-gen\r"
+expect $chroot_prompt
+send -- "echo LANG=en_US.UTF-8 > /etc/locale.conf\r"
+expect $chroot_prompt
+send -- "echo arch-qemu > /etc/hostname\r"
+expect $chroot_prompt
+send -- "echo -e '127.0.0.1  localhost\\n::1  localhost' >> /etc/hosts\r"
+expect $chroot_prompt
+send -- "mkinitcpio -P\r"
+expect $chroot_prompt
+send -- "pacman -S --noconfirm syslinux\r"
+expect $chroot_prompt
+send -- "syslinux-install_update -i -a -m\r"
+expect $chroot_prompt
+send -- "cat /boot/syslinux/syslinux.cfg\r"
+expect $chroot_prompt
+send -- "sed -i '1i SERIAL 0 115200' /boot/syslinux/syslinux.cfg\r"
+expect $chroot_prompt
+send -- "sed -i 's/APPEND root=\\/dev\\/sda3/APPEND console=tty0 console=ttyS0,115200 root=\\/dev\\/sda1/g' /boot/syslinux/syslinux.cfg\r"
+expect $chroot_prompt
+send -- "cat /boot/syslinux/syslinux.cfg\r"
+expect $chroot_prompt
+send -- "passwd\r"
+expect "New password: "
+send -- "root\r"
+expect "Retype new password: "
+send -- "root\r"
+expect $chroot_prompt
+send -- "exit\r"
+expect $prompt
+send -- "shutdown -h now\r"
+expect eof

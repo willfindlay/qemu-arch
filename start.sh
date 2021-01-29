@@ -4,6 +4,6 @@ qemu-system-x86_64 \
     -m 4G \
     -smp 4 \
     -drive \
-    file=base.img,format=qcow2 \
+    file=img.raw,format=raw \
     -nic user,hostfwd=tcp::3333-:22 \
     -nographic
