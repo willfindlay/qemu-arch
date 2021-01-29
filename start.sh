@@ -5,5 +5,5 @@ qemu-system-x86_64 \
     -smp 4 \
     -drive \
     file=base.img,format=qcow2 \
-    -nic user,hostfwd=tcp::3000-:22 \
+    -nic user,hostfwd=tcp::3333-:22 \
     -nographic
