@@ -1,7 +1,9 @@
 #!/bin/bash
 
-export IMG=img.raw
-export ISO=arch.iso
+export IMG="${IMG:-img.raw}"
+export FMT="${FMT:-raw}"
+export ISO="${ISO:-arch.iso}"
+export SIZE="${SIZE:-20G}"
 
 rm -f "$IMG"
 qemu-img create -f raw "$IMG" 20G

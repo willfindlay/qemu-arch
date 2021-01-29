@@ -1,7 +1,11 @@
-PORT=3333
-LIVECD="arch.iso"
-IMAGE="img.raw"
-QEMU_ARCH="x86_64"
+#!/bin/bash
+
+PORT=${PORT:-3333}
+LIVECD=${LIVECD:-"arch.iso"}
+IMAGE=${IMAGE:-"img.raw"}
+QEMU_ARCH=${QEMU_ARCH:-"x86_64"}
+MEM="${MEM:-4G}"
+CPU="${CPU:-4}"
 
 case "$1" in
     start)
