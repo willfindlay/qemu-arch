@@ -1,11 +1,18 @@
 #!/bin/bash
+# SPDX-License-Identifier: MIT
+#
+# Bootstrap a minimal archlinux virtual machine with qemu.
+# Copyright (c) 2021  William Findlay
+#
+# January 29, 2021  William Findlay  Created this.
 
-PORT=${PORT:-3333}
-LIVECD=${LIVECD:-"arch.iso"}
-IMAGE=${IMAGE:-"img.raw"}
-QEMU_ARCH=${QEMU_ARCH:-"x86_64"}
-MEM="${MEM:-4G}"
-CPU="${CPU:-4}"
+PORT=${PORT:=3333}
+LIVECD=${LIVECD:="arch.iso"}
+IMAGE=${IMAGE:="img.raw"}
+QEMU_ARCH=${QEMU_ARCH:="x86_64"}
+MEM="${MEM:=4G}"
+CPU="${CPU:=4}"
+DISK_SIZE="${DISK_SIZE:=20G}"
 
 main() {
     case "$1" in
@@ -60,25 +67,23 @@ kill_vm() {
 }
 
 bootstrap_vm() {
-    prompt_user "This command will overwrite $IMAGE. Continue?" || exit 127
+    prompt_user "This command will overwrite $IMAGE with a new qemu-img of size $DISK_SIZE. Continue?" || exit 127
 
     export IMAGE
     export LIVECD
 
     rm -f "$IMAGE"
-    qemu-img create -f raw "$IMAGE" 20G
+    qemu-img create -f raw "$IMAGE" "$DISK_SIZE"
 
     expect -f ./scripts/bootstrap.exp
 }
 
 prompt_user() {
-    while true; do
-        read -p "$* [y/n]: " yn
-        case $yn in
-            [Yy]*) return 0  ;;
-            [Nn]*) echo "Aborted" ; return  1 ;;
-        esac
-    done
+    read -p "$* [y/N]: " yn
+    case $yn in
+        [Yy]*) return 0  ;;
+            *) echo "Aborted" ; return  1 ;;
+    esac
 }
 
 usage() {

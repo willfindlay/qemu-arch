@@ -1,3 +1,12 @@
+# SPDX-License-Identifier: MIT
+#
+# Bootstrap a minimal archlinux virtual machine with qemu.
+# Copyright (c) 2021  William Findlay
+#
+# January 29, 2021  William Findlay  Created this.
+
+# This script is based heavily on https://blog.stefan-koch.name/2020/05/31/automation-archlinux-qemu-installation
+
 set img "$env(IMAGE)"
 set iso "$env(LIVECD)"
 
