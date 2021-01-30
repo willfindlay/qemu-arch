@@ -1,5 +1,5 @@
-set img "$env(IMG)"
-set iso "$env(ISO)"
+set img "$env(IMAGE)"
+set iso "$env(LIVECD)"
 
 set prompt "*@archiso*~*#* "
 set chroot_prompt "*root@archiso* "

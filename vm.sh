@@ -21,6 +21,9 @@ main() {
         kill)
             kill_vm
             ;;
+        bootstrap)
+            bootstrap_vm
+            ;;
         *)
             usage
     esac
@@ -56,8 +59,30 @@ kill_vm() {
     kill `ps ax | grep "qemu-system-$QEMU_ARCH" | awk 'NR==1{print $1}'`
 }
 
+bootstrap_vm() {
+    prompt_user "This command will overwrite $IMAGE. Continue?" || exit 127
+
+    export IMAGE
+    export LIVECD
+
+    rm -f "$IMAGE"
+    qemu-img create -f raw "$IMAGE" 20G
+
+    expect -f ./scripts/bootstrap.exp
+}
+
+prompt_user() {
+    while true; do
+        read -p "$* [y/n]: " yn
+        case $yn in
+            [Yy]*) return 0  ;;
+            [Nn]*) echo "Aborted" ; return  1 ;;
+        esac
+    done
+}
+
 usage() {
-    echo "Usage: vm (start|livecd|ssh|kill)"
+    echo "Usage: vm (start|livecd|ssh|kill|bootstrap)"
 }
 
 main "$@"
