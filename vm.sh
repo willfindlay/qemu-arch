@@ -43,9 +43,12 @@ main() {
 
 start_vm() {
     qemu-system-$QEMU_ARCH \
+        -enable-kvm \
         -net user,hostfwd=tcp::$PORT-:22 \
         -net nic \
-        -m 256 \
+        -m "$MEM" \
+        -cpu host \
+        -smp "$CPU" \
         -drive file="$IMAGE",format=raw \
         -display none \
         -vga none \
@@ -55,20 +58,26 @@ start_vm() {
 
 start_vm_fg() {
     qemu-system-$QEMU_ARCH \
+        -enable-kvm \
         -net user,hostfwd=tcp::$PORT-:22 \
         -net nic \
-        -m 256 \
+        -m "$MEM" \
+        -cpu host \
+        -smp "$CPU" \
         -drive file="$IMAGE",format=raw \
         -nographic
 }
 
 livecd_vm() {
     qemu-system-$QEMU_ARCH \
+        -enable-kvm \
         -cdrom "$LIVECD" \
         -boot d \
         -net user,hostfwd=tcp::$PORT-:22 \
         -net nic \
-        -m 256 \
+        -m "$MEM" \
+        -cpu host \
+        -smp "$CPU" \
         -drive file="$IMAGE",format=raw \
         -nographic
 }
