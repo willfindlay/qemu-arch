@@ -19,6 +19,9 @@ main() {
         start)
             start_vm
             ;;
+        start-fg)
+            start_vm_fg
+            ;;
         livecd)
             livecd_vm
             ;;
@@ -39,6 +42,18 @@ main() {
 }
 
 start_vm() {
+    qemu-system-$QEMU_ARCH \
+        -net user,hostfwd=tcp::$PORT-:22 \
+        -net nic \
+        -m 256 \
+        -drive file="$IMAGE",format=raw \
+        -display none \
+        -vga none \
+        -daemonize &&
+        echo "Started in background!"
+}
+
+start_vm_fg() {
     qemu-system-$QEMU_ARCH \
         -net user,hostfwd=tcp::$PORT-:22 \
         -net nic \
@@ -87,7 +102,7 @@ prompt_user() {
 }
 
 usage() {
-    echo "Usage: vm (start|livecd|ssh|kill|bootstrap)"
+    echo "Usage: vm [start|start-fg|livecd|ssh|kill|bootstrap]"
 }
 
 main "$@"
